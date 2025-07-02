@@ -1,6 +1,7 @@
 package org.opentrafficsim.demo;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
+import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterException;
 import nl.tudelft.simulation.jstats.distributions.DistNormal;
 import nl.tudelft.simulation.jstats.distributions.DistUniform;
 import nl.tudelft.simulation.jstats.streams.MersenneTwister;
@@ -20,6 +21,7 @@ import org.opentrafficsim.core.distributions.ObjectDistribution;
 import org.opentrafficsim.core.dsol.AbstractOtsModel;
 import org.opentrafficsim.core.dsol.OtsAnimator;
 import org.opentrafficsim.core.dsol.OtsSimulatorInterface;
+import org.opentrafficsim.core.gtu.Gtu;
 import org.opentrafficsim.core.gtu.GtuException;
 import org.opentrafficsim.core.gtu.GtuType;
 import org.opentrafficsim.core.idgenerator.IdSupplier;
@@ -44,6 +46,7 @@ import org.opentrafficsim.road.gtu.generator.TtcRoomChecker;
 import org.opentrafficsim.road.gtu.generator.characteristics.LaneBasedGtuTemplate;
 import org.opentrafficsim.road.gtu.generator.characteristics.LaneBasedGtuTemplateDistribution;
 import org.opentrafficsim.road.gtu.generator.headway.HeadwayGenerator;
+import org.opentrafficsim.road.gtu.lane.LaneBasedGtu;
 import org.opentrafficsim.road.gtu.lane.tactical.LaneBasedTacticalPlannerFactory;
 import org.opentrafficsim.road.gtu.lane.tactical.following.AbstractIdm;
 import org.opentrafficsim.road.gtu.lane.tactical.following.CarFollowingModelFactory;
@@ -51,6 +54,8 @@ import org.opentrafficsim.road.gtu.lane.tactical.following.IdmPlus;
 import org.opentrafficsim.road.gtu.lane.tactical.following.IdmPlusFactory;
 import org.opentrafficsim.road.gtu.lane.tactical.lmrs.*;
 import org.opentrafficsim.road.gtu.lane.tactical.util.lmrs.*;
+import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalPlanner;
+import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalPlannerFactory;
 import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalRoutePlannerFactory;
 import org.opentrafficsim.road.network.RoadNetwork;
 import org.opentrafficsim.road.network.factory.xml.parser.XmlParser;
@@ -74,6 +79,9 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
+
+import static org.djunits.unit.LengthUnit.METER;
+import static org.djunits.unit.SpeedUnit.KM_PER_HOUR;
 
 /**
  * <p>
@@ -173,9 +181,14 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
     {
         /** */
         private static final long serialVersionUID = 20170407L;
-
+        /** Number of cars created. */
+        private int carsCreated = 0;
         /** The network. */
         private RoadNetwork network;
+        /** The random number generator used to decide what kind of GTU to generate etc. */
+        private StreamInterface stream = new MersenneTwister(12345);
+        /** Strategical planner generator for cars. */
+        private LaneBasedStrategicalPlannerFactory<?> strategicalPlannerGeneratorCars = null;
 
         /**
          * Constructor.
@@ -200,9 +213,15 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
         {
             try
             {
+                this.strategicalPlannerGeneratorCars = new LaneBasedStrategicalRoutePlannerFactory(
+                        new LmrsFactory(new IdmPlusFactory(this.stream), new DefaultLmrsPerceptionFactory()));
                 URL xmlURL = URLResource.getResource("/resources/DemoNetwork.xml");
                 this.network = new RoadNetwork("MyNetworkDemo", getSimulator());
                 new XmlParser(this.network).setUrl(xmlURL).build();
+                System.out.println("Network created");
+
+                generateGTU(new Length(1, METER), "cp1-lane1", 200);
+                generateGTU(new Length(1, METER), "cp4-lane1", 0);
             }
             catch (Exception exception)
             {
@@ -219,6 +238,32 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
         private Lane getLane(final CrossSectionLink link, final String id)
         {
             return (Lane) link.getCrossSectionElement(id);
+        }
+
+        protected final LaneBasedGtu generateGTU(Length initialPosition, String lane_id, int maxSpeed)
+                throws GtuException, NetworkException, SimRuntimeException, InputParameterException
+        {
+            CrossSectionLink link = (CrossSectionLink) this.network.getLink(lane_id);
+            Lane lane = link.getLanes().get(0);
+            // GTU itself
+            boolean generateTruck = false;
+            Length vehicleLength = new Length(4, METER);
+            LaneBasedGtu gtu = new LaneBasedGtu("" + (++this.carsCreated), DefaultsNl.CAR, vehicleLength, new Length(1.8, METER),
+                    new Speed(maxSpeed, KM_PER_HOUR), vehicleLength.times(0.5), this.network);
+            gtu.setNoLaneChangeDistance(Length.ZERO);
+            gtu.setInstantaneousLaneChange(false);
+            gtu.setMaximumAcceleration(Acceleration.instantiateSI(3.0));
+            gtu.setMaximumDeceleration(Acceleration.instantiateSI(-8.0));
+
+            // strategical planner
+            LaneBasedStrategicalPlanner strategicalPlanner;
+            Route route = null;
+            strategicalPlanner = this.strategicalPlannerGeneratorCars.create(gtu, route, null, null);
+
+            // init
+            Speed initialSpeed = new Speed(0, KM_PER_HOUR);
+            gtu.init(strategicalPlanner, new LanePosition(lane, initialPosition), initialSpeed);
+            return gtu;
         }
     }
 
