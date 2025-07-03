@@ -220,8 +220,9 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
                 new XmlParser(this.network).setUrl(xmlURL).build();
                 System.out.println("Network created");
 
-                generateGTU(new Length(1, METER), "cp1-lane1", 200);
-                generateGTU(new Length(1, METER), "cp4-lane1", 0);
+                generateGTU(new Length(5, METER), "l109", 200);
+//                generateGTU(new Length(1, METER), "cp1-lane1", 200);
+//                generateGTU(new Length(1, METER), "cp4-lane1", 0);
             }
             catch (Exception exception)
             {
@@ -258,7 +259,9 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
             // strategical planner
             LaneBasedStrategicalPlanner strategicalPlanner;
             Route route = null;
-            strategicalPlanner = this.strategicalPlannerGeneratorCars.create(gtu, route, null, null);
+            Node start = this.network.getNode("l109-0");
+            Node end = this.network.getNode("l52-1");
+            strategicalPlanner = this.strategicalPlannerGeneratorCars.create(gtu, route, start, end);
 
             // init
             Speed initialSpeed = new Speed(0, KM_PER_HOUR);

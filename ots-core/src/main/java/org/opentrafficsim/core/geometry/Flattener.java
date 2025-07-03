@@ -46,7 +46,7 @@ public interface Flattener
     class NumSegments implements Flattener
     {
         /** Number of segments. */
-        private final int numSegments;
+        private int numSegments;
 
         /**
          * Constructor.
@@ -62,12 +62,26 @@ public interface Flattener
         public PolyLine2d flatten(final FlattableLine line)
         {
             Throw.whenNull(line, "Line function may not be null.");
-            List<Point2d> points = new ArrayList<>(this.numSegments + 1);
+            PolyLine2d p = null;
+            List<Point2d> points;
+            points = new ArrayList<>(this.numSegments + 1);
             for (int i = 0; i <= this.numSegments; i++)
             {
                 points.add(line.get(((double) i) / this.numSegments));
             }
-            return new PolyLine2d(points);
+            try {
+                p = new PolyLine2d(points);
+            } catch(Exception e){
+                System.out.println(e);
+                this.numSegments = 4;  // sometimes there are to many points, now we use 4 to be sure
+                points = new ArrayList<>(this.numSegments + 1);
+                for (int i = 0; i <= this.numSegments; i++)
+                {
+                    points.add(line.get(((double) i) / this.numSegments));
+                }
+                p = new PolyLine2d(points);
+            }
+            return p;
         }
     }
 
