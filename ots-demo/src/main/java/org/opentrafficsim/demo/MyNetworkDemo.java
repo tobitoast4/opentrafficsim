@@ -9,6 +9,7 @@ import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.language.DsolException;
 import org.djunits.unit.*;
 import org.djunits.value.vdouble.scalar.*;
+import org.djutils.event.reference.ReferenceType;
 import org.djutils.io.URLResource;
 import org.opentrafficsim.animation.GraphLaneUtil;
 import org.opentrafficsim.base.parameters.ParameterException;
@@ -63,6 +64,7 @@ import org.opentrafficsim.road.network.lane.CrossSectionLink;
 import org.opentrafficsim.road.network.lane.Lane;
 import org.opentrafficsim.road.network.lane.LanePosition;
 import org.opentrafficsim.road.network.lane.object.SpeedSign;
+import org.opentrafficsim.road.network.sampling.GtuDataRoad;
 import org.opentrafficsim.road.network.sampling.LaneDataRoad;
 import org.opentrafficsim.road.network.sampling.RoadSampler;
 import org.opentrafficsim.swing.graphs.OtsPlotScheduler;
@@ -71,11 +73,13 @@ import org.opentrafficsim.swing.graphs.SwingTrajectoryPlot;
 import org.opentrafficsim.swing.gui.AnimationToggles;
 import org.opentrafficsim.swing.gui.OtsAnimationPanel;
 import org.opentrafficsim.swing.gui.OtsSimulationApplication;
+import org.djutils.event.EventListener;
 
 import javax.naming.NamingException;
 import java.awt.*;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
@@ -177,7 +181,7 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
     }
 
 
-    public static class MyNetworkDemoModel extends AbstractOtsModel
+    public static class MyNetworkDemoModel extends AbstractOtsModel implements EventListener
     {
         /** */
         private static final long serialVersionUID = 20170407L;
@@ -220,13 +224,34 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
                 new XmlParser(this.network).setUrl(xmlURL).build();
                 System.out.println("Network created");
 
-                generateGTU(new Length(5, METER), "l109", 200);
+                LaneBasedGtu gtu = generateGTU(new Length(5, METER), "l109", 200);
+
+                gtu.addListener(this, LaneBasedGtu.LANEBASED_MOVE_EVENT);
 //                generateGTU(new Length(1, METER), "cp1-lane1", 200);
 //                generateGTU(new Length(1, METER), "cp4-lane1", 0);
             }
             catch (Exception exception)
             {
                 exception.printStackTrace();
+            }
+        }
+
+        public void notify(final org.djutils.event.Event event) throws RemoteException
+        {
+            if (event.getType().equals(LaneBasedGtu.LANEBASED_MOVE_EVENT))
+            {
+                // Payload: [String gtuId, PositionVector currentPosition, Direction currentDirection, Speed speed, Acceleration
+                // acceleration, TurnIndicatorStatus turnIndicatorStatus, Length odometer, Link id of referenceLane, Lane id of
+                // referenceLane, Length positionOnReferenceLane]
+                Object[] payload = (Object[]) event.getContent();
+                CrossSectionLink link = (CrossSectionLink) this.network.getLink(payload[7].toString());
+                Lane lane = (Lane) link.getCrossSectionElement(payload[8].toString());
+                LaneBasedGtu gtu = (LaneBasedGtu) this.network.getGTU(payload[0].toString());
+                LaneDataRoad laneData = new LaneDataRoad(lane);
+                gtu.isBrakingLightsOn();
+                Instant timestamp = Instant.now();
+                System.out.println("Current timestamp: " + timestamp);
+                System.out.println("Direction: " + payload[2]);
             }
         }
 
@@ -247,7 +272,6 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
             CrossSectionLink link = (CrossSectionLink) this.network.getLink(lane_id);
             Lane lane = link.getLanes().get(0);
             // GTU itself
-            boolean generateTruck = false;
             Length vehicleLength = new Length(4, METER);
             LaneBasedGtu gtu = new LaneBasedGtu("" + (++this.carsCreated), DefaultsNl.CAR, vehicleLength, new Length(1.8, METER),
                     new Speed(maxSpeed, KM_PER_HOUR), vehicleLength.times(0.5), this.network);

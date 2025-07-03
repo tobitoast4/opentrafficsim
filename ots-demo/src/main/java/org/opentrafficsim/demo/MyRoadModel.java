@@ -8,6 +8,7 @@ import org.djunits.unit.DirectionUnit;
 import org.djunits.unit.DurationUnit;
 import org.djunits.unit.util.UNITS;
 import org.djunits.value.vdouble.scalar.*;
+import org.djutils.draw.point.DirectedPoint2d;
 import org.djutils.draw.point.Point2d;
 import org.djutils.traceverifier.TraceVerifier;
 import org.json.JSONArray;
@@ -19,6 +20,7 @@ import org.opentrafficsim.core.dsol.OtsSimulatorInterface;
 import org.opentrafficsim.core.gtu.Gtu;
 import org.opentrafficsim.core.gtu.GtuException;
 import org.opentrafficsim.core.gtu.GtuType;
+import org.opentrafficsim.core.gtu.TurnIndicatorStatus;
 import org.opentrafficsim.core.network.NetworkException;
 import org.opentrafficsim.core.network.Node;
 import org.opentrafficsim.core.network.route.Route;
@@ -38,6 +40,7 @@ import org.opentrafficsim.road.network.lane.LaneType;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +95,8 @@ public class MyRoadModel extends AbstractOtsModel implements UNITS, MyListener
     private OtsSimulatorInterface simulator;
     private List<String> vehicleIdsAdded = new ArrayList<>();
 
+    private double last_dirZ = 0;
+
     /**
      * Constructor.
      * @param simulator the simulator for this model
@@ -113,14 +118,39 @@ public class MyRoadModel extends AbstractOtsModel implements UNITS, MyListener
                     System.out.println("getLocationThread starts up");
                     while (true) {
                         if (egoGtu != null && simulator.isStartingOrRunning()) {
-                            egoGtu.getLocation();
+                            DirectedPoint2d location = egoGtu.getLocation();
+                            double dirZ = egoGtu.getDirZ();
+                            double dirZ_diff = round(dirZ - last_dirZ, 3);
+                            if (dirZ_diff != 0) {
+                                Instant timestamp = Instant.now();
+                                System.out.println("Current timestamp: " + timestamp);
+                                System.out.println(dirZ_diff);
+                            }
+                            last_dirZ = dirZ;
+
+                            boolean brakeLightsOn = egoGtu.isBrakingLightsOn();
+                            TurnIndicatorStatus turnIndicatorStatus = egoGtu.getTurnIndicatorStatus();
+                            double speed = egoGtu.getSpeed().getSI();
                             double acceleration = egoGtu.getAcceleration().getSI();
-                            String msg = """
-                                    { "acceleration": """ + acceleration + "}";
+                            Lane lane = egoGtu.getLane();
+
+
+                            JSONObject gtuData = new JSONObject();
+                            gtuData.put("acceleration", acceleration);
+                            gtuData.put("speed", speed);
+                            gtuData.put("brakeLightsOn", brakeLightsOn);
+                            gtuData.put("turnIndicatorStatus", turnIndicatorStatus);
+                            JSONObject gtuLocation = new JSONObject();
+                            gtuLocation.put("x", location.getX());
+                            gtuLocation.put("y", location.getY());
+                            gtuData.put("location", gtuLocation);
+
+                            String msg = gtuData.toString();
+
                             client.sendMessage(msg);
                         }
                         try {
-                            Thread.sleep(10);
+                            Thread.sleep(1);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -132,6 +162,15 @@ public class MyRoadModel extends AbstractOtsModel implements UNITS, MyListener
             }
         };
         getLocationThread.start();
+    }
+
+    private double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 
     @Override
@@ -255,7 +294,7 @@ public class MyRoadModel extends AbstractOtsModel implements UNITS, MyListener
             }
 
             this.egoGtu = generateGTU(new Length(10, METER), lanes1[1], gtuType, 200);
-            this.egoGtu = generateGTU(new Length(200, METER), lanes1[1], gtuType, 0);
+            generateGTU(new Length(100, METER), lanes1[1], gtuType, 0);
             // Put the (not very evenly spaced) cars on the track
         }
         catch (Exception exception)
