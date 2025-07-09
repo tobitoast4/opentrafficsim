@@ -37,7 +37,6 @@ public class WebSocketClient {
             if (listener != null) {
                 listener.onEvent(jsonObject);
             }
-            System.out.println("Received: objectCount" + jsonObject.getInt("objectCount"));
         } catch (JSONException e) {
             // message is not a JSON
             System.out.println(message);

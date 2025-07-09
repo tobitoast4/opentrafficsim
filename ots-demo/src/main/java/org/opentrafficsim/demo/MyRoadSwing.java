@@ -7,6 +7,7 @@ import org.djunits.value.vdouble.scalar.Duration;
 import org.djunits.value.vdouble.scalar.Time;
 import org.opentrafficsim.core.dsol.OtsAnimator;
 import org.opentrafficsim.core.dsol.OtsSimulator;
+import org.opentrafficsim.core.gtu.Gtu;
 import org.opentrafficsim.core.perception.HistoryManagerDevs;
 import org.opentrafficsim.road.network.RoadNetwork;
 import org.opentrafficsim.swing.gui.OtsAnimationPanel;
@@ -15,6 +16,7 @@ import org.opentrafficsim.swing.gui.OtsSimulationApplication;
 import javax.naming.NamingException;
 import javax.swing.*;
 import java.awt.*;
+import java.net.URI;
 import java.rmi.RemoteException;
 
 /**
@@ -68,49 +70,49 @@ public class MyRoadSwing extends OtsSimulationApplication<MyRoadModel>
 
             simulator.initialize(Time.ZERO, Duration.ZERO, Duration.instantiateSI(3600.0), otsModel,
                     HistoryManagerDevs.noHistory(simulator));
-//            Thread getLocationThread = new Thread()
-//            {
-//                @Override
-//                public void run()
-//                {
-//                    try {
-//                        URI uri = new URI("ws://localhost:8099");
-//                        WebSocketClient client = new WebSocketClient(uri);
-//                        System.out.println("getLocationThread starts up");
-//                        int iteration = 0;
-//                        int getLocationCalls = 0;
-//                        while (simulator.isStartingOrRunning())
-//                        {
-//                            iteration++;
-//                            for (Gtu gtu : otsModel.getNetwork().getGTUs())
-//                            {
-//                                gtu.getLocation();
-//                                getLocationCalls++;
-//                                String msg = """
-//                                        { "acceleration": 1.0, "steeringWheel": 0.2 }
-//                                    """;
-//                                client.sendMessage(msg);
-//                            }
-//                            try
-//                            {
-//                                Thread.sleep(1);
-//                            }
-//                            catch (InterruptedException e)
-//                            {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        System.out.println("getLocationThread exits after " + iteration + " iterations and " + getLocationCalls
-//                                + " getLocation calls");
-//                    } catch (Exception e) {
-//                        System.out.println("ERROR: " + e);
-//                    }
-//
-//                }
-//
-//            };
+            Thread getLocationThread = new Thread()
+            {
+                @Override
+                public void run()
+                {
+                    try {
+                        URI uri = new URI("ws://localhost:8099");
+                        WebSocketClient client = new WebSocketClient(uri);
+                        System.out.println("getLocationThread starts up");
+                        int iteration = 0;
+                        int getLocationCalls = 0;
+                        while (simulator.isStartingOrRunning())
+                        {
+                            iteration++;
+                            for (Gtu gtu : otsModel.getNetwork().getGTUs())
+                            {
+                                gtu.getLocation();
+                                getLocationCalls++;
+                                String msg = """
+                                        { "acceleration": 1.0, "steeringWheel": 0.2 }
+                                    """;
+                                client.sendMessage(msg);
+                            }
+                            try
+                            {
+                                Thread.sleep(1);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        System.out.println("getLocationThread exits after " + iteration + " iterations and " + getLocationCalls
+                                + " getLocation calls");
+                    } catch (Exception e) {
+                        System.out.println("ERROR: " + e);
+                    }
+
+                }
+
+            };
             simulator.start();
-//            getLocationThread.start();
+            getLocationThread.start();
             while (simulator.isStartingOrRunning())
             {
                 Thread.sleep(1000);
