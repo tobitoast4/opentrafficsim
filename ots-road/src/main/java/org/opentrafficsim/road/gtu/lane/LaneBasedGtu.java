@@ -173,6 +173,8 @@ public class LaneBasedGtu extends Gtu implements LaneBasedObject
     /** Distance over which the GTU should not change lane after being created. */
     private Length noLaneChangeDistance;
 
+    private boolean isLaneChangeAllowed = true;
+
     /**
      * Construct a Lane Based GTU.
      * @param id the id of the GTU
@@ -1645,12 +1647,19 @@ public class LaneBasedGtu extends Gtu implements LaneBasedObject
         this.noLaneChangeDistance = distance;
     }
 
+    public void setIsLaneChangeAllowed(boolean isAllowed) {
+        this.isLaneChangeAllowed = isAllowed;
+    }
+
     /**
      * Returns whether a lane change is allowed.
      * @return whether a lane change is allowed
      */
     public final boolean laneChangeAllowed()
     {
+        if (!this.isLaneChangeAllowed) {
+            return false;
+        }
         return this.noLaneChangeDistance == null ? true : getOdometer().gt(this.noLaneChangeDistance);
     }
 

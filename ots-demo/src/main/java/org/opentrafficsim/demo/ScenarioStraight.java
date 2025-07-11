@@ -325,20 +325,21 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                     } else {
                         if (this.network.gtuMap.containsKey(id)) {
                             LaneBasedGtu gtu = (LaneBasedGtu) this.network.gtuMap.get(id);
+                            // TODO: Place on other lane
 
+                            if (objectV > 0) {  // set new operational plan if v > 0
+                                Time now = getSimulator().getSimulatorAbsTime();
+                                DirectedPoint2d location = new DirectedPoint2d(objectX, -objectY, 0);
 
-                            Time now = getSimulator().getSimulatorAbsTime();
-                            DirectedPoint2d location = new DirectedPoint2d(objectX, -objectY, 0);
+                                Speed newSpeed = new Speed(objectV, KM_PER_HOUR);
 
-                            Speed newSpeed = new Speed(objectV, KM_PER_HOUR);
+                                Point2d p2 = new Point2d(location.x + 10 * Math.cos(gtu.getDirZ()),
+                                        location.y + 10 * Math.sin(gtu.getDirZ()));
+                                OtsLine2d path = new OtsLine2d(location, p2);
 
-                            Point2d p2 = new Point2d(location.x + 10 * Math.cos(gtu.getDirZ()),
-                                    location.y + 10 * Math.sin(gtu.getDirZ()));
-                            OtsLine2d path = new OtsLine2d(location, p2);
-
-                            gtu.setOperationalPlan(new OperationalPlan(gtu, path, now,
-                                    Segments.off(newSpeed, path.getTypedLength().divide(newSpeed), Acceleration.ZERO)));
-
+                                gtu.setOperationalPlan(new OperationalPlan(gtu, path, now,
+                                        Segments.off(newSpeed, path.getTypedLength().divide(newSpeed), Acceleration.ZERO)));
+                            }
                             gtuIDsUpdated.add(id);
                         } else {
                             try {
@@ -350,8 +351,10 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                                     throw new NetworkException("Invalid lane");
                                 }
 
+                                System.out.println("Create GTU " + id + ", (" + objectX + ", " + objectY + ")");
                                 LaneBasedGtu newGtu = generateGTU(id, new DirectedPoint2d(objectX, objectY, 0), (int) objectV, laneID);
                                 newGtu.getParameters().setParameter(LmrsParameters.DRIGHT, 0.0);  // no desire to change lane to right
+                                newGtu.setIsLaneChangeAllowed(false);
                                 gtuIDsUpdated.add(id);
                             } catch (GtuException | NetworkException | InputParameterException | ParameterException e) {
                                 throw new RuntimeException(e);
