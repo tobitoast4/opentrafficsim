@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.djutils.draw.bounds.Bounds2d;
+import org.djutils.draw.point.Point2d;
 import org.djutils.event.EventProducer;
 import org.djutils.event.EventType;
 import org.djutils.event.LocalEventProducer;
@@ -352,6 +353,25 @@ public class Network extends LocalEventProducer implements PerceivableContext, S
     public final Link getLink(final String linkId)
     {
         return this.linkMap.get(linkId);
+    }
+
+    public final Link getClosestLink(final Point2d point) {
+        double minDistance = Double.MAX_VALUE;
+        Link closestLink = null;
+
+        if (linkMap.isEmpty()) {
+            return null;
+        }
+
+        for (Link link : this.linkMap.values())
+        {
+            double distanceToLink = link.getDistance(point);
+            if (distanceToLink < minDistance) {
+                minDistance = distanceToLink;
+                closestLink = link;
+            }
+        }
+        return closestLink;
     }
 
     /***************************************************************************************/

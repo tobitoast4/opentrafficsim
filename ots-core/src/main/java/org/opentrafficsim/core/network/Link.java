@@ -11,6 +11,7 @@ import org.djutils.draw.function.ContinuousPiecewiseLinearFunction;
 import org.djutils.draw.line.PolyLine2d;
 import org.djutils.draw.line.Polygon2d;
 import org.djutils.draw.point.DirectedPoint2d;
+import org.djutils.draw.point.Point2d;
 import org.djutils.event.EventType;
 import org.djutils.event.LocalEventProducer;
 import org.djutils.exceptions.Throw;
@@ -275,6 +276,68 @@ public class Link extends LocalEventProducer
     public Bounds2d getBounds()
     {
         return this.relativeContour.getBounds();
+    }
+
+    public double lengthToClosestPoint(Point2d point) {
+        double minDistance = getDistance(point);
+        double cumulativeDistance = 0;
+        for (int i = 0; i < this.absoluteContour.size() - 1; i++) {
+            Point2d p1 = this.absoluteContour.get(i);
+            Point2d p2 = this.absoluteContour.get(i + 1);
+            double segmentLength = p1.distance(p1);
+
+            if (distancePointToSegment(point, p1, p2) <= minDistance) {
+                Point2d projectedPoint = projectPoint(point, p1, p2);
+                double partiallySegmentLength = p1.distance(projectedPoint);
+                cumulativeDistance += partiallySegmentLength;
+                return cumulativeDistance;
+            } else {
+                cumulativeDistance += segmentLength;
+            }
+        }
+        return -1;
+    }
+
+    public double getDistance(Point2d point) {
+        // Gets the minimum distance of an absolute point to the absoluteContour.
+        double minDistance = Double.MAX_VALUE;
+        for (int i = 0; i < this.absoluteContour.size() - 1; i++) {
+            Point2d p1 = this.absoluteContour.get(i);
+            Point2d p2 = this.absoluteContour.get(i + 1);
+            double distance = distancePointToSegment(point, p1, p2);
+            minDistance = Math.min(minDistance, distance);
+        }
+        return minDistance;
+    }
+
+    private Point2d projectPoint(Point2d point, Point2d p1, Point2d p2) {
+        double dx = p2.x - p1.x;
+        double dy = p2.y - p1.y;
+
+        if (dx == 0 && dy == 0) {
+            // a and b are the same point
+            return p1;
+        }
+
+        // Project point p onto the line segment ab, computing parameterized t
+        double t = ((point.x - p1.x) * dx + (point.y - p1.y) * dy) / (dx * dx + dy * dy);
+
+        // Clamp t from 0 to 1
+        t = Math.max(0, Math.min(1, t));
+
+        // Compute projection point
+        double projX = p1.x + t * dx;
+        double projY = p1.y + t * dy;
+
+        return new Point2d(projX, projY);
+    }
+
+    private double distancePointToSegment(Point2d p, Point2d a, Point2d b) {
+        Point2d projectedPoint = projectPoint(p, a, b);
+        // Distance from point to projection
+        double distX = p.x - projectedPoint.x;
+        double distY = p.y - projectedPoint.y;
+        return Math.hypot(distX, distY);
     }
 
     /**

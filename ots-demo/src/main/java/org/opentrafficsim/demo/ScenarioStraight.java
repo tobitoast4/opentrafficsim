@@ -183,7 +183,7 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                 new XmlParser(this.network).setUrl(xmlURL).build();
                 System.out.println("Network created");
 
-                this.egoGtu = generateGTU(new Length(10, METER), "AB", egoGtuMaxSpeed);
+                this.egoGtu = generateGTU(new DirectedPoint2d(10, 0, 0), egoGtuMaxSpeed);
                 this.egoGtu.addListener(this, LaneBasedGtu.LANEBASED_MOVE_EVENT);
                 this.egoGtu.getParameters().setParameter(ParameterTypes.BCRIT,
                         new Acceleration(10, AccelerationUnit.METER_PER_SECOND_2));
@@ -207,7 +207,12 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                                 DirectedPoint2d position = egoGtu.getLocation();
                                 double speed = egoGtu.getSpeed().getSI();
                                 double acceleration = egoGtu.getAcceleration().getSI();
-                                boolean isBrakingLightsOn = egoGtu.isBrakingLightsOn();
+                                boolean isBrakingLightsOn = false;
+                                try {
+                                    isBrakingLightsOn = egoGtu.isBrakingLightsOn();
+                                } catch (Exception e) {
+                                    System.out.println(e);
+                                }
                                 String turnIndicatorStatus = egoGtu.getTurnIndicatorStatus().name();
                                 egoGtu.getLane();
                                 JSONObject dataJson = new JSONObject();
@@ -254,14 +259,10 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
             return (Lane) link.getCrossSectionElement(id);
         }
 
-        protected final LaneBasedGtu generateGTU(Length initialPosition, String link_id, int maxSpeed)
+        protected final LaneBasedGtu generateGTU(DirectedPoint2d initialLocation, int maxSpeed)
                 throws GtuException, NetworkException, SimRuntimeException, InputParameterException {
-            if (maxSpeed < 0) {
-                maxSpeed = 0;
-            }
-
             // TODO: Implement parameter lane_id
-            CrossSectionLink link = (CrossSectionLink) this.network.getLink(link_id);
+            CrossSectionLink link = (CrossSectionLink) this.network.getClosestLink(initialLocation);
             Lane lane = link.getLanes().get(1);
             // GTU itself
             Length vehicleLength = new Length(4, METER);
@@ -281,7 +282,8 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
 
             // init
             Speed initialSpeed = new Speed(0, KM_PER_HOUR);
-            gtu.init(strategicalPlanner, new LanePosition(lane, initialPosition), initialSpeed);
+            Length length = new Length(link.lengthToClosestPoint(initialLocation), METER);
+            gtu.init(strategicalPlanner, new LanePosition(lane, length), initialSpeed);
             return gtu;
         }
 
@@ -318,12 +320,10 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                             continue;
                         }
                         try {
-                            double absolutPosition = egoGtu.getReferencePosition().position().si;
                             String link_id = this.egoGtu.getLane().getLink().getId();
                             String lane_id = this.egoGtu.getLane().getId();
-                            Length length = new Length(absolutPosition + distance, METER);
-                            System.out.println("Add GTU: " + length + ", v=" + objectV);
-                            generateGTU(length, link_id, (int) objectV);
+
+                            generateGTU(new DirectedPoint2d(objectX, objectY, 0), (int) objectV);
                             vehicleIdsAdded.add(id);
                         } catch (GtuException | NetworkException | InputParameterException e) {
                             throw new RuntimeException(e);
