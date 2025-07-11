@@ -5,12 +5,16 @@ import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterException;
 import nl.tudelft.simulation.jstats.streams.MersenneTwister;
 import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.language.DsolException;
+import org.djunits.unit.AccelerationUnit;
+import org.djunits.unit.SpeedUnit;
 import org.djunits.value.vdouble.scalar.*;
 import org.djutils.draw.point.DirectedPoint2d;
 import org.djutils.event.EventListener;
 import org.djutils.io.URLResource;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.opentrafficsim.base.parameters.ParameterType;
+import org.opentrafficsim.base.parameters.ParameterTypes;
 import org.opentrafficsim.core.definitions.DefaultsNl;
 import org.opentrafficsim.core.dsol.AbstractOtsModel;
 import org.opentrafficsim.core.dsol.OtsAnimator;
@@ -141,6 +145,7 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
         private WebSocketClient client;
 
         private LaneBasedGtu egoGtu;
+        private int egoGtuMaxSpeed = 200;
         private List<String> vehicleIdsAdded = new ArrayList<>();
         private String laneChange = "";
 
@@ -178,8 +183,14 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                 new XmlParser(this.network).setUrl(xmlURL).build();
                 System.out.println("Network created");
 
-                this.egoGtu = generateGTU(new Length(5, METER), "AB", 200);
+                this.egoGtu = generateGTU(new Length(10, METER), "AB", egoGtuMaxSpeed);
                 this.egoGtu.addListener(this, LaneBasedGtu.LANEBASED_MOVE_EVENT);
+                this.egoGtu.getParameters().setParameter(ParameterTypes.BCRIT,
+                        new Acceleration(10, AccelerationUnit.METER_PER_SECOND_2));
+                this.egoGtu.getParameters().setParameter(ParameterTypes.B,
+                        new Acceleration(9, AccelerationUnit.METER_PER_SECOND_2));
+                this.egoGtu.getParameters().setParameter(ParameterTypes.B0,
+                    new Acceleration(6, AccelerationUnit.METER_PER_SECOND_2));
 
 //                gtu.addListener(this, LaneBasedGtu.LANEBASED_MOVE_EVENT);
 //                generateGTU(new Length(1, METER), "cp1-lane1", 200);
@@ -208,7 +219,7 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                                 laneChange = "";  // the request for lane change was send --> reset
                                 JSONObject positionJson = new JSONObject();
                                 positionJson.put("x", position.getX());
-                                positionJson.put("y", position.getX());
+                                positionJson.put("y", position.getY());
                                 dataJson.put("position", positionJson);
 
                                 String msg = dataJson.toString();
@@ -283,26 +294,40 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                 JSONArray objects = data.getJSONArray("objects");
                 for (int i = 0; i < objects.length(); i++) {
                     JSONObject object = objects.getJSONObject(i);
+                    double objectX = object.getDouble("x");
+                    double objectY = object.getDouble("y");
+                    double objectV = object.getDouble("v");
+                    double distance = Math.hypot(objectX - egoX, objectY - egoY);
+
                     String name = object.getString("name");
                     if (!name.contains("Vehicles") || name.equals("Vehicles.V600.Fiat500.main")) {  // there is another car
-                        continue;
-                    }
-                    String id = object.getString("id");
-                    if (vehicleIdsAdded.contains(id)) {
-                        continue;
-                    }
-                    double vehicleX = object.getDouble("x");
-                    double vehicleY = object.getDouble("y");
-                    double vehicleV = object.getDouble("v");
-                    double distance = Math.hypot(vehicleX - egoX, vehicleY - egoY);
-                    try {
-                        double absolutPosition = egoGtu.getReferencePosition().position().si;
-                        String link_id = this.egoGtu.getLane().getLink().getId();
-                        String lane_id = this.egoGtu.getLane().getId();
-                        generateGTU(new Length(absolutPosition + distance, METER), link_id, (int) vehicleV);
-                        vehicleIdsAdded.add(id);
-                    } catch (GtuException | NetworkException | InputParameterException e) {
-                        throw new RuntimeException(e);
+                        if (name.contains("sign.")) {
+                            if (name.contains("274_")) {         // Speed limit  (doc/Referenz DatenbasisSCNX.pdf, p109)
+                                String[] parts = name.split("_");
+                                String lastPart = parts[1];
+                                int speedLimit = Integer.parseInt(lastPart);
+                                this.egoGtu.temporarySpeedLimit = new Speed(speedLimit, KM_PER_HOUR);
+                            } else if (name.contains("278_")) {  // Speed limit removed
+                                this.egoGtu.temporarySpeedLimit = null;
+                                System.out.println("New MaxSpeed: " + egoGtuMaxSpeed);
+                            }
+                        }
+                    } else {
+                        String id = object.getString("id");
+                        if (vehicleIdsAdded.contains(id)) {
+                            continue;
+                        }
+                        try {
+                            double absolutPosition = egoGtu.getReferencePosition().position().si;
+                            String link_id = this.egoGtu.getLane().getLink().getId();
+                            String lane_id = this.egoGtu.getLane().getId();
+                            Length length = new Length(absolutPosition + distance, METER);
+                            System.out.println("Add GTU: " + length + ", v=" + objectV);
+                            generateGTU(length, link_id, (int) objectV);
+                            vehicleIdsAdded.add(id);
+                        } catch (GtuException | NetworkException | InputParameterException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }

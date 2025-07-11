@@ -128,6 +128,8 @@ public class LaneBasedGtu extends Gtu implements LaneBasedObject
     /** Cached desired speed. */
     private Speed cachedDesiredSpeed;
 
+    public Speed temporarySpeedLimit = null;
+
     /** Time desired speed was cached. */
     private Time desiredSpeedTime;
 
@@ -1490,6 +1492,9 @@ public class LaneBasedGtu extends Gtu implements LaneBasedObject
                 InfrastructurePerception infra = perception.getPerceptionCategoryOrNull(InfrastructurePerception.class);
                 Throw.whenNull(infra, "InfrastructurePerception is required to determine the desired speed.");
                 SpeedLimitInfo speedInfo = infra.getSpeedLimitProspect(RelativeLane.CURRENT).getSpeedLimitInfo(Length.ZERO);
+                if (this.temporarySpeedLimit != null) {
+                    speedInfo.addSpeedInfo(SpeedLimitTypes.DYNAMIC_SIGN, this.temporarySpeedLimit);
+                }
                 // leaders
                 NeighborsPerception neighbors = perception.getPerceptionCategoryOrNull(NeighborsPerception.class);
                 Throw.whenNull(neighbors, "NeighborsPerception is required to determine the car-following acceleration.");
