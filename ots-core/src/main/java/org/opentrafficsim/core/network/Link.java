@@ -278,6 +278,20 @@ public class Link extends LocalEventProducer
         return this.relativeContour.getBounds();
     }
 
+    public Point2d getClosestPoint(Point2d point) {
+        double minDistance = getDistance(point);
+        for (int i = 0; i < this.absoluteContour.size() - 1; i++) {
+            Point2d p1 = this.absoluteContour.get(i);
+            Point2d p2 = this.absoluteContour.get(i + 1);
+
+            if (distancePointToSegment(point, p1, p2) <= minDistance) {
+                Point2d projectedPoint = projectPoint(point, p1, p2);
+                return projectedPoint;
+            }
+        }
+        return null;
+    }
+
     public double lengthToClosestPoint(Point2d point) {
         double minDistance = getDistance(point);
         double cumulativeDistance = 0;

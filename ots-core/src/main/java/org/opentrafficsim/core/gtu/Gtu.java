@@ -9,10 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.djunits.unit.DirectionUnit;
-import org.djunits.unit.DurationUnit;
-import org.djunits.unit.PositionUnit;
-import org.djunits.unit.TimeUnit;
+import org.djunits.unit.*;
 import org.djunits.value.vdouble.scalar.Acceleration;
 import org.djunits.value.vdouble.scalar.Direction;
 import org.djunits.value.vdouble.scalar.Duration;
@@ -646,7 +643,7 @@ public class Gtu extends LocalEventProducer implements HierarchicallyTyped<GtuTy
      * Set the operational plan. This method is for sub classes.
      * @param operationalPlan operational plan.
      */
-    protected void setOperationalPlan(final OperationalPlan operationalPlan)
+    public void setOperationalPlan(final OperationalPlan operationalPlan)
     {
         this.operationalPlan.set(operationalPlan);
     }
@@ -728,6 +725,7 @@ public class Gtu extends LocalEventProducer implements HierarchicallyTyped<GtuTy
                     }
                     else
                     {
+//                        return new Speed(0, SpeedUnit.KM_PER_HOUR);
                         throw new IllegalStateException("Requesting speed value beyond plan.");
                     }
                 }
@@ -787,6 +785,7 @@ public class Gtu extends LocalEventProducer implements HierarchicallyTyped<GtuTy
                     }
                     else
                     {
+//                        return new Acceleration(0, AccelerationUnit.METER_PER_SECOND_2);
                         throw new IllegalStateException("Requesting acceleration value beyond plan.");
                     }
                 }

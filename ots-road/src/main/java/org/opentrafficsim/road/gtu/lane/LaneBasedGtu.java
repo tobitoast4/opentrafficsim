@@ -215,7 +215,7 @@ public class LaneBasedGtu extends Gtu implements LaneBasedObject
         Time now = getSimulator().getSimulatorAbsTime();
         if (initialSpeed.si < OperationalPlan.DRIFTING_SPEED_SI)
         {
-            setOperationalPlan(OperationalPlan.standStill(this, initialLocation, now, Duration.instantiateSI(1E-6)));
+            setOperationalPlan(OperationalPlan.standStill(this, initialLocation, now, Duration.instantiateSI(1000)));
         }
         else
         {

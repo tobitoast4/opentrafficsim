@@ -74,7 +74,7 @@ public class Network extends LocalEventProducer implements PerceivableContext, S
             new MultiKeyMap<>(GtuType.class, LinkWeight.class);
 
     /** GTUs registered in this network. */
-    private Map<String, Gtu> gtuMap = Collections.synchronizedMap(new LinkedHashMap<>());
+    public Map<String, Gtu> gtuMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
     /** The DSOL simulator engine. */
     private final OtsSimulatorInterface simulator;

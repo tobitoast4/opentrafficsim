@@ -8,16 +8,23 @@ import nl.tudelft.simulation.language.DsolException;
 import org.djunits.unit.AccelerationUnit;
 import org.djunits.value.vdouble.scalar.*;
 import org.djutils.draw.point.DirectedPoint2d;
+import org.djutils.draw.point.Point2d;
 import org.djutils.event.EventListener;
 import org.djutils.io.URLResource;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.opentrafficsim.base.geometry.OtsLine2d;
+import org.opentrafficsim.base.parameters.ParameterException;
+import org.opentrafficsim.base.parameters.ParameterTypeDouble;
 import org.opentrafficsim.base.parameters.ParameterTypes;
 import org.opentrafficsim.core.definitions.DefaultsNl;
 import org.opentrafficsim.core.dsol.AbstractOtsModel;
 import org.opentrafficsim.core.dsol.OtsAnimator;
 import org.opentrafficsim.core.dsol.OtsSimulatorInterface;
+import org.opentrafficsim.core.gtu.Gtu;
 import org.opentrafficsim.core.gtu.GtuException;
+import org.opentrafficsim.core.gtu.plan.operational.OperationalPlan;
+import org.opentrafficsim.core.gtu.plan.operational.Segments;
 import org.opentrafficsim.core.network.Link;
 import org.opentrafficsim.core.network.NetworkException;
 import org.opentrafficsim.core.network.Node;
@@ -29,6 +36,7 @@ import org.opentrafficsim.road.gtu.lane.LaneBasedGtu;
 import org.opentrafficsim.road.gtu.lane.tactical.following.IdmPlusFactory;
 import org.opentrafficsim.road.gtu.lane.tactical.lmrs.DefaultLmrsPerceptionFactory;
 import org.opentrafficsim.road.gtu.lane.tactical.lmrs.LmrsFactory;
+import org.opentrafficsim.road.gtu.lane.tactical.util.lmrs.LmrsParameters;
 import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalPlanner;
 import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalPlannerFactory;
 import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalRoutePlannerFactory;
@@ -47,7 +55,9 @@ import java.awt.*;
 import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.djunits.unit.LengthUnit.METER;
@@ -143,7 +153,6 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
 
         private LaneBasedGtu egoGtu;
         private int egoGtuMaxSpeed = 200;
-        private Map<String, LaneBasedGtu> vehiclesMap = new LinkedHashMap<>();
         private String laneChange = "";
 
         /**
@@ -180,7 +189,7 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                 new XmlParser(this.network).setUrl(xmlURL).build();
                 System.out.println("Network created");
 
-                this.egoGtu = generateGTU(new DirectedPoint2d(10, 0, 0), egoGtuMaxSpeed, 1);
+                this.egoGtu = generateGTU("AV", new DirectedPoint2d(10, 0, 0), egoGtuMaxSpeed, 1);
                 this.egoGtu.addListener(this, LaneBasedGtu.LANEBASED_MOVE_EVENT);
                 this.egoGtu.getParameters().setParameter(ParameterTypes.BCRIT,
                         new Acceleration(10, AccelerationUnit.METER_PER_SECOND_2));
@@ -256,17 +265,16 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
             return (Lane) link.getCrossSectionElement(id);
         }
 
-        protected final LaneBasedGtu generateGTU(DirectedPoint2d initialLocation, int maxSpeed, int laneID)
+        protected final LaneBasedGtu generateGTU(String id, DirectedPoint2d initialLocation, int maxSpeed, int laneID)
                 throws GtuException, NetworkException, SimRuntimeException, InputParameterException {
             // TODO: Implement parameter lane_id
             CrossSectionLink link = (CrossSectionLink) this.network.getClosestLink(initialLocation);
             Lane lane = link.getLanes().get(laneID);
             // GTU itself
             Length vehicleLength = new Length(4, METER);
-            LaneBasedGtu gtu = new LaneBasedGtu("" + (++this.carsCreated), DefaultsNl.CAR, vehicleLength, new Length(1.8, METER),
+            LaneBasedGtu gtu = new LaneBasedGtu(id, DefaultsNl.CAR, vehicleLength, new Length(1.8, METER),
                     new Speed(maxSpeed, KM_PER_HOUR), vehicleLength.times(0.5), this.network);
             gtu.setNoLaneChangeDistance(Length.ZERO);
-            gtu.setInstantaneousLaneChange(false);
             gtu.setMaximumAcceleration(Acceleration.instantiateSI(3.0));
             gtu.setMaximumDeceleration(Acceleration.instantiateSI(-8.0));
 
@@ -287,12 +295,15 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
         @Override
         public void onEvent(JSONObject data) {
             if (egoGtu != null && simulator.isStartingOrRunning()) {
+                List<String> gtuIDsUpdated = new ArrayList<>();
+//                private Map<String, LaneBasedGtu> vehiclesMap = new LinkedHashMap<>();
                 double avX = data.getJSONObject("av").getDouble("x");
                 double avY = data.getJSONObject("av").getDouble("y");
 
                 JSONArray objects = data.getJSONArray("objects");
                 for (int i = 0; i < objects.length(); i++) {
                     JSONObject object = objects.getJSONObject(i);
+                    String id = object.getString("type");
                     double objectX = object.getJSONObject("position").getDouble("x");
                     double objectY = object.getJSONObject("position").getDouble("y");
                     double objectV = object.getDouble("v");
@@ -312,26 +323,49 @@ public class ScenarioStraight extends OtsSimulationApplication<ScenarioStraightM
                             }
                         }
                     } else {
-                        String id = object.getString("type");
-                        if (vehiclesMap.containsKey(id)) {
-                            continue;
-//                            LaneBasedGtu gtu = vehiclesMap.get(id);
-//                            this.network.removeGTU(gtu);
-                        }
-                        try {
-                            if (laneID == 5) {
-                                laneID = 1;
-                            } else if (laneID == 4) {
-                                laneID = 0;
-                            } else {
-                                throw new NetworkException("Invalid lane");
-                            }
+                        if (this.network.gtuMap.containsKey(id)) {
+                            LaneBasedGtu gtu = (LaneBasedGtu) this.network.gtuMap.get(id);
 
-                            LaneBasedGtu newGtu = generateGTU(new DirectedPoint2d(objectX, objectY, 0), (int) objectV, laneID);
-                            vehiclesMap.put(id, newGtu);
-                        } catch (GtuException | NetworkException | InputParameterException e) {
-                            throw new RuntimeException(e);
+
+                            Time now = getSimulator().getSimulatorAbsTime();
+                            DirectedPoint2d location = new DirectedPoint2d(objectX, -objectY, 0);
+
+                            Speed newSpeed = new Speed(objectV, KM_PER_HOUR);
+
+                            Point2d p2 = new Point2d(location.x + 10 * Math.cos(gtu.getDirZ()),
+                                    location.y + 10 * Math.sin(gtu.getDirZ()));
+                            OtsLine2d path = new OtsLine2d(location, p2);
+
+                            gtu.setOperationalPlan(new OperationalPlan(gtu, path, now,
+                                    Segments.off(newSpeed, path.getTypedLength().divide(newSpeed), Acceleration.ZERO)));
+
+                            gtuIDsUpdated.add(id);
+                        } else {
+                            try {
+                                if (laneID == 5) {
+                                    laneID = 1;
+                                } else if (laneID == 4) {
+                                    laneID = 0;
+                                } else {
+                                    throw new NetworkException("Invalid lane");
+                                }
+
+                                LaneBasedGtu newGtu = generateGTU(id, new DirectedPoint2d(objectX, objectY, 0), (int) objectV, laneID);
+                                newGtu.getParameters().setParameter(LmrsParameters.DRIGHT, 0.0);  // no desire to change lane to right
+                                gtuIDsUpdated.add(id);
+                            } catch (GtuException | NetworkException | InputParameterException | ParameterException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
+                    }
+                }
+
+                for (Gtu gtu : this.network.getGTUs()) {
+                    if (gtu.getId().equals("AV")) {
+                        continue;
+                    }
+                    if (!gtuIDsUpdated.contains(gtu.getId())) {
+                        gtu.destroy();
                     }
                 }
             }
