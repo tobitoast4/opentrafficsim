@@ -338,7 +338,7 @@
       <ots:DefinedLayout>RIGHT</ots:DefinedLayout>
     </ots:Link>
     <ots:Link Id="l171" NodeStart="l171-0" NodeEnd="l132-0" Type="URBAN">
-      <ots:Bezier />
+      <ots:Bezier Shape="0.99" Weighted="true" />
       <ots:DefinedLayout>RIGHT</ots:DefinedLayout>
     </ots:Link>
     <ots:Link Id="l152" NodeStart="l152-0" NodeEnd="l149-0" Type="URBAN">

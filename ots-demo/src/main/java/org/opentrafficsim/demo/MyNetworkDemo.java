@@ -224,7 +224,7 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
                 new XmlParser(this.network).setUrl(xmlURL).build();
                 System.out.println("Network created");
 
-                LaneBasedGtu gtu = generateGTU(new Length(5, METER), "l109", 200);
+                LaneBasedGtu gtu = generateGTU(new Length(5, METER), "l191", 200);
 
                 gtu.addListener(this, LaneBasedGtu.LANEBASED_MOVE_EVENT);
 //                generateGTU(new Length(1, METER), "cp1-lane1", 200);
