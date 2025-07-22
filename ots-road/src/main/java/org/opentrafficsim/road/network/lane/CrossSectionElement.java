@@ -1,6 +1,9 @@
 package org.opentrafficsim.road.network.lane;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.djunits.value.vdouble.scalar.Length;
 import org.djutils.base.Identifiable;
@@ -8,6 +11,7 @@ import org.djutils.draw.bounds.Bounds2d;
 import org.djutils.draw.function.ContinuousPiecewiseLinearFunction;
 import org.djutils.draw.line.Polygon2d;
 import org.djutils.draw.point.DirectedPoint2d;
+import org.djutils.draw.point.Point2d;
 import org.djutils.event.LocalEventProducer;
 import org.djutils.exceptions.Throw;
 import org.djutils.exceptions.Try;
@@ -72,8 +76,17 @@ public abstract class CrossSectionElement extends LocalEventProducer implements 
         this.centerLine = geometry.centerLine();
         this.location = geometry.centerLine().getLocationPointFractionExtended(0.5);
         this.absoluteContour = geometry.absoluteContour();
-        this.relativeContour =
-                new Polygon2d(OtsShape.toRelativeTransform(this.location).transform(this.absoluteContour.iterator()));
+        System.out.println(location);
+        Iterator<Point2d> points = OtsShape.toRelativeTransform(this.location).transform(this.absoluteContour.iterator());
+        List<Point2d> list = new ArrayList<>();
+        while (points.hasNext()) {
+            Point2d p_n = points.next();
+            boolean exists = list.stream().anyMatch(p -> p.toString().equals(p_n.toString()));
+            if (!exists) {
+                list.add(p_n);
+            }
+        }
+        this.relativeContour = new Polygon2d(list);
         this.offset = geometry.offset();
         this.width = geometry.width();
 

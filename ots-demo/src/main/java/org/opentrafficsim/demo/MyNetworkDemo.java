@@ -219,7 +219,7 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
             {
                 this.strategicalPlannerGeneratorCars = new LaneBasedStrategicalRoutePlannerFactory(
                         new LmrsFactory(new IdmPlusFactory(this.stream), new DefaultLmrsPerceptionFactory()));
-                URL xmlURL = URLResource.getResource("/resources/DemoNetwork.xml");
+                URL xmlURL = URLResource.getResource("/resources/MotorwayExit.xml");
                 this.network = new RoadNetwork("MyNetworkDemo", getSimulator());
                 new XmlParser(this.network).setUrl(xmlURL).build();
                 System.out.println("Network created");

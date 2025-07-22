@@ -64,23 +64,23 @@ public interface Flattener
             Throw.whenNull(line, "Line function may not be null.");
             PolyLine2d p = null;
             List<Point2d> points;
-            points = new ArrayList<>(this.numSegments + 1);
-            for (int i = 0; i <= this.numSegments; i++)
+
+            for (int n = 64; n > 0; n--)
             {
-                points.add(line.get(((double) i) / this.numSegments));
-            }
-            try {
-                p = new PolyLine2d(points);
-            } catch(Exception e){
-                System.out.println(e);
-                this.numSegments = 4;  // sometimes there are to many points, now we use 4 to be sure
+                this.numSegments = n;  // sometimes there are to many points, now we use as much as possible
                 points = new ArrayList<>(this.numSegments + 1);
                 for (int i = 0; i <= this.numSegments; i++)
                 {
                     points.add(line.get(((double) i) / this.numSegments));
                 }
-                p = new PolyLine2d(points);
+                try {
+                    p = new PolyLine2d(points);
+                    break;
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
             }
+
             return p;
         }
     }
