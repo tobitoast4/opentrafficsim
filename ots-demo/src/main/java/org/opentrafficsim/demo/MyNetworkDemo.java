@@ -58,6 +58,7 @@ import org.opentrafficsim.road.gtu.lane.tactical.util.lmrs.*;
 import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalPlanner;
 import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalPlannerFactory;
 import org.opentrafficsim.road.gtu.strategical.LaneBasedStrategicalRoutePlannerFactory;
+import org.opentrafficsim.road.gtu.strategical.RouteGenerator;
 import org.opentrafficsim.road.network.RoadNetwork;
 import org.opentrafficsim.road.network.factory.xml.parser.XmlParser;
 import org.opentrafficsim.road.network.lane.CrossSectionLink;
@@ -283,8 +284,8 @@ public class MyNetworkDemo extends OtsSimulationApplication<MyNetworkDemoModel>
             // strategical planner
             LaneBasedStrategicalPlanner strategicalPlanner;
             Route route = null;
-            Node start = this.network.getNode("l109-0");
-            Node end = this.network.getNode("l52-1");
+            Node start = this.network.getNode("l191-0");
+            Node end = this.network.getNode("cp2-lane1-1");
             strategicalPlanner = this.strategicalPlannerGeneratorCars.create(gtu, route, start, end);
 
             // init

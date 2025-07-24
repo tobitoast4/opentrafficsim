@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bindings xmlns="http://java.sun.com/xml/ns/jaxb" if-exists="true" version="2.1">
+      
+    <!--
+
+Diese Datei wurde mit der Eclipse Implementation of JAXB, v2.3.7 generiert 
+Siehe https://eclipse-ee4j.github.io/jaxb-ri 
+Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
+Generiert: 2025.07.24 um 01:18:43 PM CEST 
+
+  -->
+      
+    <bindings xmlns:tns="http://www.opentrafficsim.org/ots" if-exists="true" scd="x-schema::tns">
+            
+        <schemaBindings map="false">
+                  
+            <package name="org.opentrafficsim.xml.generated"/>
+                
+        </schemaBindings>
+            
+        <bindings if-exists="true" scd="tns:Control">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Control"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Od">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Od"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:OdOptions">
+                  
+            <class ref="org.opentrafficsim.xml.generated.OdOptions"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:GtuTemplateMix">
+                  
+            <class ref="org.opentrafficsim.xml.generated.GtuTemplateMix"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:ShortestRoute">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ShortestRoute"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:RouteMix">
+                  
+            <class ref="org.opentrafficsim.xml.generated.RouteMix"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:ShortestRouteMix">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ShortestRouteMix"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Link">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Link"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Network">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Network"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:RandomStream">
+                  
+            <class ref="org.opentrafficsim.xml.generated.RandomStream"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:PerceptionType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.PerceptionType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ControlType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ControlType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ResponsiveControlType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ResponsiveControlType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ConstantDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ConstantDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:DiscreteDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.DiscreteDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ScenarioType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ScenarioType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:InputParameters">
+                  
+            <class ref="org.opentrafficsim.xml.generated.InputParameters"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:FlattenerType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.FlattenerType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ModelType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ModelType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:GlobalTimeType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.GlobalTimeType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:LinkAnimationType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LinkAnimationType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:RoadLayoutAnimationType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.RoadLayoutAnimationType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:DefaultAnimationType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.DefaultAnimationType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:GtuColorers">
+                  
+            <class ref="org.opentrafficsim.xml.generated.GtuColorers"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Animation">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Animation"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:LinkTypeAnimationType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LinkTypeAnimationType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:LaneTypeAnimationType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LaneTypeAnimationType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ConnectorAnimationType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ConnectorAnimationType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:LayerToggleType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LayerToggleType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:GtuType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.GtuType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:HierarchicalType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.HierarchicalType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:GtuTypes">
+                  
+            <class ref="org.opentrafficsim.xml.generated.GtuTypes"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:GtuTemplate">
+                  
+            <class ref="org.opentrafficsim.xml.generated.GtuTemplate"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:LengthDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LengthDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:SpeedDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.SpeedDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:AccelerationDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.AccelerationDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:GtuTemplates">
+                  
+            <class ref="org.opentrafficsim.xml.generated.GtuTemplates"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Compatibility">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Compatibility"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:LaneType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LaneType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:GtuCompatibleInfraType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.GtuCompatibleInfraType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:LaneTypes">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LaneTypes"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:LaneBias">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LaneBias"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:LaneBiases">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LaneBiases"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:LinkType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LinkType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:SpeedLimit">
+                  
+            <class ref="org.opentrafficsim.xml.generated.SpeedLimit"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:LinkTypes">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LinkTypes"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:DetectorType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.DetectorType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:DetectorTypes">
+                  
+            <class ref="org.opentrafficsim.xml.generated.DetectorTypes"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:RoadLayouts">
+                  
+            <class ref="org.opentrafficsim.xml.generated.RoadLayouts"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:RoadLayout">
+                  
+            <class ref="org.opentrafficsim.xml.generated.RoadLayout"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:BasicRoadLayout">
+                  
+            <class ref="org.opentrafficsim.xml.generated.BasicRoadLayout"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:CseStripe">
+                  
+            <class ref="org.opentrafficsim.xml.generated.CseStripe"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:CseLane">
+                  
+            <class ref="org.opentrafficsim.xml.generated.CseLane"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:CseShoulder">
+                  
+            <class ref="org.opentrafficsim.xml.generated.CseShoulder"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:ParameterTypes">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypes"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeDuration">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeDuration"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeLength">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeLength"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeSpeed">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeSpeed"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeAcceleration">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeAcceleration"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeLinearDensity">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeLinearDensity"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeFrequency">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeFrequency"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeDouble">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeDouble"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeFraction">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeFraction"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeInteger">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeInteger"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeBoolean">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeBoolean"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeString">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeString"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeClass">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeClass"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Definitions">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Definitions"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:CategoryType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.CategoryType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:RandomStreamSource">
+                  
+            <class ref="org.opentrafficsim.xml.generated.RandomStreamSource"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Route">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Route"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Generator">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Generator"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:RoomCheckerType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.RoomCheckerType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Sink">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Sink"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:ListGenerator">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ListGenerator"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Demand">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Demand"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ModelIdReferralType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ModelIdReferralType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Models">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Models"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Centroid">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Centroid"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Node">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Node"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Connector">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Connector"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:EmptyType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.EmptyType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:TrafficLightType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.TrafficLightType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:TrafficLightDetectorType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.TrafficLightDetectorType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:RandomStreams">
+                  
+            <class ref="org.opentrafficsim.xml.generated.RandomStreams"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Run">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Run"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Scenarios">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Scenarios"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:Ots">
+                  
+            <class ref="org.opentrafficsim.xml.generated.Ots"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:LaneLinkType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LaneLinkType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:PositionDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.PositionDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:TimeDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.TimeDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:DurationDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.DurationDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:LinearDensityDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LinearDensityDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:FrequencyDistType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.FrequencyDistType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeFloat">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeFloat"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:ParameterTypeLong">
+                  
+            <class ref="org.opentrafficsim.xml.generated.ParameterTypeLong"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:CrossSectionElement">
+                  
+            <class ref="org.opentrafficsim.xml.generated.CrossSectionElement"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:TrafCodCoordinatesType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.TrafCodCoordinatesType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:LevelTimeType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.LevelTimeType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:CorrelationParameterType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.CorrelationParameterType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:CarFollowingModelType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.CarFollowingModelType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:CarFollowingModelHeadwaySpeedType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.CarFollowingModelHeadwaySpeedType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:DesiredHeadwayModelType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.DesiredHeadwayModelType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:DesiredSpeedModelType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.DesiredSpeedModelType"/>
+                
+        </bindings>
+          
+    </bindings>
+      
+    <bindings xmlns:tns="http://www.w3.org/2001/XInclude" if-exists="true" scd="x-schema::tns">
+            
+        <schemaBindings map="false">
+                  
+            <package name="org.opentrafficsim.xml.generated"/>
+                
+        </schemaBindings>
+            
+        <bindings if-exists="true" scd="~tns:includeType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.IncludeType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:fallbackType">
+                  
+            <class ref="org.opentrafficsim.xml.generated.FallbackType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:parseType">
+                  
+            <typesafeEnumClass ref="org.opentrafficsim.xml.generated.ParseType"/>
+                
+        </bindings>
+          
+    </bindings>
+    
+</bindings>
