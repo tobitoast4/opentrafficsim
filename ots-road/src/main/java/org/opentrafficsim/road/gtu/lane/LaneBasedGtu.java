@@ -135,9 +135,6 @@ public class LaneBasedGtu extends Gtu
     /** Time desired speed was cached. */
     private Time desiredSpeedTime;
 
-    /** If != null and >=Double.NEGATIVE_INFINITY this will overwrite this.cachedCarFollowingAcceleration. */
-    private Acceleration overwrittenAcceleration = null;
-
     /** Cached car-following acceleration. */
     private Acceleration cachedCarFollowingAcceleration;
 
@@ -1495,10 +1492,6 @@ public class LaneBasedGtu extends Gtu
         this.temporarySpeedLimit = temporarySpeedLimit;
     }
 
-    public void setOverwrittenAcceleration(Acceleration overwrittenAcceleration) {
-        this.overwrittenAcceleration = overwrittenAcceleration;
-    }
-
     /**
      * This method returns the current car-following acceleration of the GTU. This value is required often, so implementations
      * can cache it.
@@ -1508,9 +1501,6 @@ public class LaneBasedGtu extends Gtu
     {
         synchronized (this)
         {
-            if (this.overwrittenAcceleration != null && this.overwrittenAcceleration.getSI() > Double.NEGATIVE_INFINITY) {
-                return this.overwrittenAcceleration;
-            }
             Time simTime = getSimulator().getSimulatorAbsTime();
             if (this.carFollowingAccelerationTime == null || this.carFollowingAccelerationTime.si < simTime.si)
             {
