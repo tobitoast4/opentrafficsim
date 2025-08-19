@@ -31,13 +31,19 @@ public class IndicatorPoint extends StaticObject
 
     /** */
     private static final long serialVersionUID = 20170420L;
+    private String avId;
 
     @SuppressWarnings("checkstyle:parameternumber")
-    public IndicatorPoint(final String id, PolyLine2d geometry)
+    public IndicatorPoint(final String avId, PolyLine2d geometry, OrientedPoint2d position)
             throws NetworkException
     {
-        super(id, new OrientedPoint2d(0, 0), geometry, new Length(-999, LengthUnit.METER));
+        super(avId, position, geometry, new Length(-999, LengthUnit.METER));
+        this.avId = avId;
         init();
+    }
+
+    public String getAvId() {
+        return avId;
     }
 
     /** {@inheritDoc} */
