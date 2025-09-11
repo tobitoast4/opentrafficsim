@@ -50,7 +50,7 @@ public class OtsSwingApplication<T extends OtsModelInterface> extends Appearance
         setTitle("OTS | The Open Traffic Simulator | " + model.getDescription());
         pack();
 //        setExtendedState(Frame.MAXIMIZED_BOTH);
-        setSize(1900, 900);
+        setSize(1900, 750);
         setVisible(true);
 
         setExitOnClose(true);
